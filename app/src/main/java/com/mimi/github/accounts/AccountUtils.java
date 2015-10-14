@@ -51,18 +51,24 @@ public class AccountUtils {
      * @return true is authenticator registered, false otherwise
      */
     public static boolean hasAuthenticator(final AccountManager manager) {
+        Log.d(TAG,"--------------hasAuthenticator----------= " + AUTHENTICATOR_CHECKED);
         if (!AUTHENTICATOR_CHECKED) {
             final AuthenticatorDescription[] types = manager
                     .getAuthenticatorTypes();
-            if (types != null && types.length > 0)
-                for (AuthenticatorDescription descriptor : types)
+            if (types != null && types.length > 0) {
+                for (AuthenticatorDescription descriptor : types) {
+                    if(descriptor != null){
+                        Log.d(TAG,"--------------hasAuthenticator----------= " + descriptor.packageName);
+                    }
                     if (descriptor != null
                             && ACCOUNT_TYPE.equals(descriptor.type)) {
-                        HAS_AUTHENTICATOR = "jp.forkhub"
-                                .equals(descriptor.packageName);
+                        HAS_AUTHENTICATOR = true;//= "jp.forkhub"
+                                //.equals(descriptor.packageName);
                         break;
                     }
-            AUTHENTICATOR_CHECKED = true;
+                    AUTHENTICATOR_CHECKED = true;
+                }
+            }
         }
 
         return HAS_AUTHENTICATOR;
@@ -112,13 +118,15 @@ public class AccountUtils {
     private static Account[] getAccounts(final AccountManager manager)
             throws OperationCanceledException, AuthenticatorException,
             IOException {
+        Log.d(TAG,"--------------getAccounts----------");
         final AccountManagerFuture<Account[]> future = manager
                 .getAccountsByTypeAndFeatures(ACCOUNT_TYPE, null, null, null);
         final Account[] accounts = future.getResult();
-        if (accounts != null && accounts.length > 0)
+        if (accounts != null && accounts.length > 0) {
             return getPasswordAccessibleAccounts(manager, accounts);
-        else
+        } else {
             return new Account[0];
+        }
     }
 
     /**
@@ -173,7 +181,7 @@ public class AccountUtils {
         final boolean loggable = true;//Log.isLoggable(TAG, DEBUG);
         if (loggable)
             Log.d(TAG, "Getting account");
-
+        Log.d(TAG,"--------------while getAccounts----------");
         if (activity == null)
             throw new IllegalArgumentException("Activity cannot be null");
 
@@ -181,10 +189,13 @@ public class AccountUtils {
             throw new OperationCanceledException();
 
         Account[] accounts;
+        Log.d(TAG,"--------------while getAccounts--22222--------");
         try {
-            if (!hasAuthenticator(manager))
+            if (!hasAuthenticator(manager)) {
+                Log.d(TAG,"--------------while getAccounts--33333--------");
                 throw new AuthenticatorConflictException();
-
+            }
+            Log.d(TAG,"--------------while getAccounts----------");
             while ((accounts = getAccounts(manager)).length == 0) {
                 if (loggable)
                     Log.d(TAG, "No GitHub accounts for activity=" + activity);
