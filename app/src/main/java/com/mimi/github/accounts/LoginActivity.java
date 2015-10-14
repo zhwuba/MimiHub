@@ -3,6 +3,7 @@ package com.mimi.github.accounts;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.view.Menu;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -38,5 +39,10 @@ public class LoginActivity extends RoboActionBarAccountAuthenticatorActivity{
         signupText.setText(Html.fromHtml(getString(R.string.signup_link)));
 
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu optionMenu) {
+        return true;
     }
 }
