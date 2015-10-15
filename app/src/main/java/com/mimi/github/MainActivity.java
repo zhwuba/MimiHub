@@ -9,29 +9,35 @@ import android.support.v4.content.Loader;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.mimi.github.ui.TabPagerActivity;
 import com.mimi.github.ui.repo.OrganizationLoader;
+import com.mimi.github.ui.user.HomePagerAdapter;
 
 import org.eclipse.egit.github.core.User;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends TabPagerActivity<HomePagerAdapter>
         implements NavigationView.OnNavigationItemSelectedListener,
         LoaderManager.LoaderCallbacks<List<User>> {
+
+    @Override
+    protected HomePagerAdapter createAdapter() {
+        return new HomePagerAdapter(this, false);
+    }
 
     private final static String TAG = "mimi.MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        //setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -54,6 +60,11 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         getSupportLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    protected int getContentView(){
+        return R.layout.activity_main;
     }
 
     @Override
@@ -121,7 +132,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onLoadFinished(Loader<List<User>> loader, List<User> data) {
-
+        configureTabPager();
     }
 
     @Override
