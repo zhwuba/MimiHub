@@ -21,7 +21,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.github.kevinsawicki.wishlist.ViewFinder;
+import com.google.inject.Inject;
 import com.mimi.github.R;
+import com.mimi.github.Util.ToastUtils;
+import com.mimi.github.persistence.AccountDataManager;
 import com.mimi.github.roboactivities.RoboActionBarAccountAuthenticatorActivity;
 import com.mimi.github.ui.LightProgressDialog;
 
@@ -34,6 +37,10 @@ import java.util.List;
 
 import roboguice.util.RoboAsyncTask;
 
+import static android.accounts.AccountManager.KEY_ACCOUNT_NAME;
+import static android.accounts.AccountManager.KEY_ACCOUNT_TYPE;
+import static android.accounts.AccountManager.KEY_AUTHTOKEN;
+import static android.accounts.AccountManager.KEY_BOOLEAN_RESULT;
 import static com.mimi.github.accounts.AccountConstants.ACCOUNT_TYPE;
 import static com.mimi.github.accounts.AccountConstants.PROVIDER_AUTHORITY;
 
@@ -201,16 +208,64 @@ public class LoginActivity extends RoboActionBarAccountAuthenticatorActivity{
             protected void onSuccess(User user) throws Exception {
                 Log.d(TAG,"-----login success---------");
                 dialog.dismiss();
+
+                if (user != null)
+                    onAuthenticationResult(true);
             }
 
             @Override
             protected void onException(Exception e) throws RuntimeException {
                 Log.d(TAG,"-----login onException---------" + e);
                 dialog.dismiss();
+
+                handleLoginException(e);
             }
         };
 
         authenticationTask.execute();
+    }
+
+    public void onAuthenticationResult(boolean result) {
+        if (result) {
+            if (!confirmCredentials)
+                finishLogin(username, password);
+            else
+                finishConfirmCredentials(true);
+        } else {
+            if (requestNewAccount)
+                ToastUtils.show(this, R.string.invalid_login_or_password);
+            else
+                ToastUtils.show(this, R.string.invalid_password);
+        }
+    }
+
+    private void handleLoginException(final Exception e) {
+        if (AccountUtils.isUnauthorized(e))
+            onAuthenticationResult(false);
+        else
+            ToastUtils.show(LoginActivity.this, e, R.string.code_authentication_failed);
+    }
+
+    protected void finishConfirmCredentials(boolean result) {
+        final Account account = new Account(username, ACCOUNT_TYPE);
+        accountManager.setPassword(account, password);
+
+        final Intent intent = new Intent();
+        intent.putExtra(KEY_BOOLEAN_RESULT, result);
+        setAccountAuthenticatorResult(intent.getExtras());
+        setResult(RESULT_OK, intent);
+        finish();
+    }
+
+    protected void finishLogin(final String username, final String password) {
+        final Intent intent = new Intent();
+        intent.putExtra(KEY_ACCOUNT_NAME, username);
+        intent.putExtra(KEY_ACCOUNT_TYPE, ACCOUNT_TYPE);
+        if (ACCOUNT_TYPE.equals(authTokenType))
+            intent.putExtra(KEY_AUTHTOKEN, password);
+        setAccountAuthenticatorResult(intent.getExtras());
+        setResult(RESULT_OK, intent);
+        finish();
     }
 
     @Override
@@ -234,9 +289,9 @@ public class LoginActivity extends RoboActionBarAccountAuthenticatorActivity{
     public static class AccountLoader extends
             AuthenticatedUserTask<List<User>> {
 
-       /* @Inject
+        @Inject
         private AccountDataManager cache;
-       */
+
         protected AccountLoader(Context context) {
             super(context);
         }
