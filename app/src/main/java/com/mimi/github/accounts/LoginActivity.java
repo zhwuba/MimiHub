@@ -298,7 +298,7 @@ public class LoginActivity extends RoboActionBarAccountAuthenticatorActivity{
 
         @Override
         protected List<User> run(Account account) throws Exception {
-            return null;//return cache.getOrgs(true);
+            return cache.getOrgs(true);
         }
     }
 }

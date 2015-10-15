@@ -1,5 +1,6 @@
 package com.mimi.github;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -14,25 +15,54 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.mimi.github.Util.AvatarLoader;
+import com.mimi.github.Util.PreferenceUtils;
+import com.mimi.github.core.user.UserComparator;
+import com.mimi.github.persistence.AccountDataManager;
 import com.mimi.github.ui.TabPagerActivity;
 import com.mimi.github.ui.repo.OrganizationLoader;
 import com.mimi.github.ui.user.HomePagerAdapter;
 
 import org.eclipse.egit.github.core.User;
 
+import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends TabPagerActivity<HomePagerAdapter>
         implements NavigationView.OnNavigationItemSelectedListener,
         LoaderManager.LoaderCallbacks<List<User>> {
 
+    private final static String TAG = "mimi.MainActivity";
+
+    private static final String PREF_ORG_ID = "orgId";
+
+    private List<User> orgs = Collections.emptyList();
+
+    private User org;
+
+    @Inject
+    private AccountDataManager accountDataManager;
+
+    @Inject
+    private Provider<UserComparator> userComparatorProvider;
+
+    @Inject
+    private AvatarLoader avatars;
+
+    @Inject
+    private SharedPreferences sharedPreferences;
+
+    private boolean isDefaultUser;
+
     @Override
     protected HomePagerAdapter createAdapter() {
         return new HomePagerAdapter(this, false);
     }
-
-    private final static String TAG = "mimi.MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,16 +157,53 @@ public class MainActivity extends TabPagerActivity<HomePagerAdapter>
     @Override
     public Loader<List<User>> onCreateLoader(int id, Bundle args) {
         Log.d(TAG," -------------- onCreateLoader---------");
-        return new OrganizationLoader(this);
+        return new OrganizationLoader(this,accountDataManager,userComparatorProvider);
     }
 
     @Override
-    public void onLoadFinished(Loader<List<User>> loader, List<User> data) {
-        configureTabPager();
+    public void onLoadFinished(Loader<List<User>> loader, List<User> orgs) {
+        Log.d(TAG,"--------  onLoadFinished ----- = " + orgs);
+        this.orgs = orgs;
+
+        int sharedPreferencesOrgId = sharedPreferences.getInt(PREF_ORG_ID, -1);
+        int targetOrgId = org == null ? sharedPreferencesOrgId : org.getId();
+
+       /* Menu menu = navigationView.getMenu();
+        menu.removeGroup(R.id.user_select);
+        for (int i = 0; i < orgs.size(); ++i) {
+            final MenuItem item = menu.add(R.id.user_select, i, Menu.NONE, orgs.get(i).getLogin());
+            avatars.bind(item, orgs.get(i));
+            if (orgs.get(i).getId() == targetOrgId) {
+                setOrg(orgs.get(i));
+            }
+        }*/
+
+        // If the target org is invalid (e.g. first login), select the first one
+        if (targetOrgId == -1 && orgs.size() > 0) {
+            setOrg(orgs.get(0));
+        }
+
+        //menu.setGroupVisible(R.id.user_select, false);
     }
 
     @Override
     public void onLoaderReset(Loader<List<User>> loader) {
 
+    }
+
+    private void setOrg(User org) {
+        Log.d(TAG, "setOrg : " + org.getLogin());
+
+        PreferenceUtils.save(sharedPreferences.edit().putInt(PREF_ORG_ID,
+                org.getId()));
+
+        // Don't notify listeners or change pager if org hasn't changed
+        if (this.org != null && this.org.getId() == org.getId())
+            return;
+
+        this.org = org;
+
+        avatars.bind((ImageView) findViewById(R.id.imageView), org);
+        ((TextView) findViewById(R.id.textView)).setText(org.getLogin());
     }
 }
