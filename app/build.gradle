@@ -7,7 +7,7 @@ android {
     buildToolsVersion "23.0.1"
 
     defaultConfig {
-        applicationId "jp.forkhub"
+        applicationId 'jp.forkhub'
         minSdkVersion 16
         targetSdkVersion 23
         versionCode 1

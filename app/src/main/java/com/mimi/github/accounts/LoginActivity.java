@@ -146,6 +146,25 @@ public class LoginActivity extends RoboActionBarAccountAuthenticatorActivity{
 
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+
+        // Finish task if valid account exists
+        if (requestNewAccount) {
+            Account existing = AccountUtils.getPasswordAccessibleAccount(this);
+            if (existing != null && !TextUtils.isEmpty(existing.name)) {
+                String password = AccountManager.get(this)
+                        .getPassword(existing);
+                if (!TextUtils.isEmpty(password))
+                    finishLogin(existing.name, password);
+            }
+            return;
+        }
+
+        updateEnablement();
+    }
+
     private boolean loginEnabled() {
         return !TextUtils.isEmpty(loginText.getText())
                 && !TextUtils.isEmpty(passwordText.getText());

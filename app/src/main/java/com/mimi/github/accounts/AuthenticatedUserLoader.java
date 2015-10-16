@@ -20,7 +20,7 @@ import roboguice.inject.ContextScope;
  * Created by zwb on 15-10-13.
  */
 public abstract class AuthenticatedUserLoader<D> extends AsyncLoader<D> {
-    private static final String TAG = "mimi.AuthenticatedUserLoader";
+    private static final String TAG = "mimi.AuthenticatedUserr";
 
     @Inject
     private ContextScope contextScope;
