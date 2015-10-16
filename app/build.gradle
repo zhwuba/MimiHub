@@ -1,11 +1,13 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.github.triplet.play'
+
 
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.1"
 
     defaultConfig {
-        applicationId "com.mimi.github"
+        applicationId "jp.forkhub"
         minSdkVersion 16
         targetSdkVersion 23
         versionCode 1

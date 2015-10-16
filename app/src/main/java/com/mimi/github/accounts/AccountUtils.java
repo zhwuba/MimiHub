@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static android.accounts.AccountManager.KEY_ACCOUNT_NAME;
+import static android.util.Log.DEBUG;
 import static com.mimi.github.accounts.AccountConstants.ACCOUNT_TYPE;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 
@@ -39,7 +40,6 @@ public class AccountUtils {
     private static final AtomicInteger UPDATE_COUNT = new AtomicInteger(0);
 
     private static class AuthenticatorConflictException extends IOException {
-
         private static final long serialVersionUID = 641279204734869183L;
     }
 
@@ -51,24 +51,19 @@ public class AccountUtils {
      * @return true is authenticator registered, false otherwise
      */
     public static boolean hasAuthenticator(final AccountManager manager) {
-        Log.d(TAG,"--------------hasAuthenticator----------= " + AUTHENTICATOR_CHECKED);
         if (!AUTHENTICATOR_CHECKED) {
             final AuthenticatorDescription[] types = manager
                     .getAuthenticatorTypes();
-            if (types != null && types.length > 0) {
-                for (AuthenticatorDescription descriptor : types) {
-                    if(descriptor != null){
-                        Log.d(TAG,"--------------hasAuthenticator----------= " + descriptor.packageName);
-                    }
+            if (types != null && types.length > 0)
+                for (AuthenticatorDescription descriptor : types)
                     if (descriptor != null
                             && ACCOUNT_TYPE.equals(descriptor.type)) {
-                        HAS_AUTHENTICATOR = true;//= "jp.forkhub"
-                                //.equals(descriptor.packageName);
+                        Log.d(TAG,"--------packageName -------- " + descriptor.packageName);
+                        HAS_AUTHENTICATOR = "jp.forkhub"
+                                .equals(descriptor.packageName);
                         break;
                     }
-                    AUTHENTICATOR_CHECKED = true;
-                }
-            }
+            AUTHENTICATOR_CHECKED = true;
         }
 
         return HAS_AUTHENTICATOR;
@@ -118,15 +113,13 @@ public class AccountUtils {
     private static Account[] getAccounts(final AccountManager manager)
             throws OperationCanceledException, AuthenticatorException,
             IOException {
-        Log.d(TAG,"--------------getAccounts----------");
         final AccountManagerFuture<Account[]> future = manager
                 .getAccountsByTypeAndFeatures(ACCOUNT_TYPE, null, null, null);
         final Account[] accounts = future.getResult();
-        if (accounts != null && accounts.length > 0) {
+        if (accounts != null && accounts.length > 0)
             return getPasswordAccessibleAccounts(manager, accounts);
-        } else {
+        else
             return new Account[0];
-        }
     }
 
     /**
@@ -178,10 +171,10 @@ public class AccountUtils {
      */
     public static Account getAccount(final AccountManager manager,
                                      final Activity activity) throws IOException, AccountsException {
-        final boolean loggable = true;//Log.isLoggable(TAG, DEBUG);
+        final boolean loggable = Log.isLoggable(TAG, DEBUG);
         if (loggable)
             Log.d(TAG, "Getting account");
-        Log.d(TAG,"--------------while getAccounts----------");
+
         if (activity == null)
             throw new IllegalArgumentException("Activity cannot be null");
 
@@ -189,13 +182,10 @@ public class AccountUtils {
             throw new OperationCanceledException();
 
         Account[] accounts;
-        Log.d(TAG,"--------------while getAccounts--22222--------");
         try {
-            if (!hasAuthenticator(manager)) {
-                Log.d(TAG,"--------------while getAccounts--33333--------");
+            if (!hasAuthenticator(manager))
                 throw new AuthenticatorConflictException();
-            }
-            Log.d(TAG,"--------------while getAccounts----------");
+
             while ((accounts = getAccounts(manager)).length == 0) {
                 if (loggable)
                     Log.d(TAG, "No GitHub accounts for activity=" + activity);
@@ -219,7 +209,7 @@ public class AccountUtils {
             activity.runOnUiThread(new Runnable() {
 
                 public void run() {
-                    showConflictMessage(activity);
+                    //showConflictMessage(activity);
                 }
             });
             throw e;
@@ -269,7 +259,7 @@ public class AccountUtils {
                 activity.runOnUiThread(new Runnable() {
 
                     public void run() {
-                        showConflictMessage(activity);
+                        //showConflictMessage(activity);
                     }
                 });
                 return false;
@@ -286,8 +276,9 @@ public class AccountUtils {
      *
      * @param activity
      */
+    /*
     private static void showConflictMessage(final Activity activity) {
-        /*AlertDialog dialog = LightAlertDialog.create(activity);
+        AlertDialog dialog = LightAlertDialog.create(activity);
         dialog.setTitle(activity.getString(R.string.authenticator_conflict_title));
         dialog.setMessage(activity
                 .getString(R.string.authenticator_conflict_message));
@@ -307,8 +298,8 @@ public class AccountUtils {
                     }
                 });
         dialog.show();
-        */
     }
+    */
 
     /**
      * Is the given {@link Exception} due to a 401 Unauthorized API response?

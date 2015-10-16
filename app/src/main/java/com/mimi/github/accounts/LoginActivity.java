@@ -168,8 +168,8 @@ public class LoginActivity extends RoboActionBarAccountAuthenticatorActivity{
 
             @Override
             public void onCancel(DialogInterface dialog) {
-                //if (authenticationTask != null)
-                //  authenticationTask.cancel(true);
+                if (authenticationTask != null)
+                  authenticationTask.cancel(true);
             }
         });
         dialog.show();
@@ -206,7 +206,7 @@ public class LoginActivity extends RoboActionBarAccountAuthenticatorActivity{
 
             @Override
             protected void onSuccess(User user) throws Exception {
-                Log.d(TAG,"-----login success---------");
+                Log.d(TAG,"-----login success---user------" + user);
                 dialog.dismiss();
 
                 if (user != null)
