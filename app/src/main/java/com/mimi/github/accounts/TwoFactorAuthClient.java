@@ -1,6 +1,7 @@
 package com.mimi.github.accounts;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.mimi.github.DefaultClient;
 
@@ -15,6 +16,7 @@ import java.net.HttpURLConnection;
  * Created by zwb on 15-10-15.
  */
 public class TwoFactorAuthClient extends DefaultClient {
+    private final static String TAG = "TwoFactorAuthClient";
 
     /**
      * Two-factor authentication code header
@@ -61,15 +63,18 @@ public class TwoFactorAuthClient extends DefaultClient {
 
         try {
             String accept = request.getResponseContentType();
+            Log.d(TAG, "----- GitHubResponse ---- acct = " + accept);
             if (accept != null)
                 httpRequest.setRequestProperty(HEADER_ACCEPT, accept);
             final int code = httpRequest.getResponseCode();
+            Log.d(TAG, "----- GitHubResponse ---- code = " + code);
             updateRateLimits(httpRequest);
             if (isOk(code))
                 return new GitHubResponse(httpRequest, getBody(request,
                         getStream(httpRequest)));
             if (isEmpty(code))
                 return new GitHubResponse(httpRequest, null);
+            Log.d(TAG, "----- GitHubResponse ---- code error ");
             throw createException(getStream(httpRequest), code,
                     httpRequest.getResponseMessage());
         } catch (IOException e) {

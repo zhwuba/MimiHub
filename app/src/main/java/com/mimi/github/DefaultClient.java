@@ -23,7 +23,7 @@ public class DefaultClient extends GitHubClient{
         setSerializeNulls(false);
         setUserAgent(USER_AGENT);
     }
-
+/*
     @Override
     protected HttpURLConnection createConnection(String uri) throws IOException {
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.FROYO) {
@@ -33,5 +33,16 @@ public class DefaultClient extends GitHubClient{
         OkUrlFactory factory = new OkUrlFactory(new OkHttpClient());
         URL url = new URL(createUri(uri));
         return factory.open(url);
+    }
+    */
+
+    @Override
+    protected HttpURLConnection configureRequest(HttpURLConnection request) {
+        super.configureRequest(request);
+
+        request.setRequestProperty(HEADER_ACCEPT,
+                "application/vnd.github.v3.full+json");
+
+        return request;
     }
 }
