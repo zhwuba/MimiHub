@@ -22,6 +22,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.mimi.github.Util.AvatarLoader;
 import com.mimi.github.Util.PreferenceUtils;
+import com.mimi.github.accounts.AccountUtils;
 import com.mimi.github.core.user.UserComparator;
 import com.mimi.github.persistence.AccountDataManager;
 import com.mimi.github.ui.TabPagerActivity;
@@ -61,7 +62,7 @@ public class MainActivity extends TabPagerActivity<HomePagerAdapter>
 
     @Override
     protected HomePagerAdapter createAdapter() {
-        return new HomePagerAdapter(this, false);
+        return new HomePagerAdapter(this, isDefaultUser);
     }
 
     @Override
@@ -168,6 +169,9 @@ public class MainActivity extends TabPagerActivity<HomePagerAdapter>
         int sharedPreferencesOrgId = sharedPreferences.getInt(PREF_ORG_ID, -1);
         int targetOrgId = org == null ? sharedPreferencesOrgId : org.getId();
 
+        Log.d(TAG,"--------  onLoadFinished ----sharedPreferencesOrgId- = " + sharedPreferencesOrgId);
+        Log.d(TAG,"--------  onLoadFinished ----orgs.size()- = " + orgs.size());
+
        /* Menu menu = navigationView.getMenu();
         menu.removeGroup(R.id.user_select);
         for (int i = 0; i < orgs.size(); ++i) {
@@ -179,9 +183,9 @@ public class MainActivity extends TabPagerActivity<HomePagerAdapter>
         }*/
 
         // If the target org is invalid (e.g. first login), select the first one
-        if (targetOrgId == -1 && orgs.size() > 0) {
+       // if (targetOrgId == -1 && orgs.size() > 0) {
             setOrg(orgs.get(0));
-        }
+        //}
 
         //menu.setGroupVisible(R.id.user_select, false);
     }
@@ -205,5 +209,23 @@ public class MainActivity extends TabPagerActivity<HomePagerAdapter>
 
         avatars.bind((ImageView) findViewById(R.id.imageView), org);
         ((TextView) findViewById(R.id.textView)).setText(org.getLogin());
+
+        boolean isDefaultUser = AccountUtils.isUser(this, org);
+        boolean changed = this.isDefaultUser != isDefaultUser;
+        this.isDefaultUser = isDefaultUser;
+        if (adapter == null)
+            configureTabPager();
+        else if (changed) {
+            int item = pager.getCurrentItem();
+            adapter.clearAdapter(isDefaultUser);
+            adapter.notifyDataSetChanged();
+            createTabs();
+            if (item >= adapter.getCount())
+                item = adapter.getCount() - 1;
+            pager.setItem(item);
+        }
+
+        //for (OrganizationSelectionListener listener : orgSelectionListeners)
+            //listener.onOrganizationSelected(org);
     }
 }
