@@ -36,7 +36,7 @@ import static com.mimi.github.accounts.AccountConstants.APP_NOTE;
  */
 public class AccountAuthenticator extends AbstractAccountAuthenticator {
 
-    private static final String TAG = "GitHubAccountAuthenticator";
+    private static final String TAG = "AccountAuthenticator";
 
     private static final List<String> SCOPES = Arrays.asList("repo", "user", "gist");
 
@@ -59,6 +59,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
                              final String accountType, final String authTokenType,
                              final String[] requiredFeatures, final Bundle options)
             throws NetworkErrorException {
+        Log.d(TAG,"---------ddd addAccount---------");
         final Intent intent = new Intent(context, LoginActivity.class);
         intent.putExtra(PARAM_AUTHTOKEN_TYPE, authTokenType);
         intent.putExtra(KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
@@ -90,6 +91,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
     }
 
     private Intent createLoginIntent(final AccountAuthenticatorResponse response) {
+        Log.d(TAG,"---------ddd createLoginIntent---------");
         final Intent intent = new Intent(context, LoginActivity.class);
         intent.putExtra(PARAM_AUTHTOKEN_TYPE, ACCOUNT_TYPE);
         intent.putExtra(KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
@@ -129,7 +131,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
     public Bundle getAuthToken(final AccountAuthenticatorResponse response,
                                final Account account, final String authTokenType,
                                final Bundle options) throws NetworkErrorException {
-        Log.d(TAG, "Retrieving OAuth2 token");
+        Log.d(TAG, "zhangwuba Retrieving OAuth2 token");
 
         final Bundle bundle = new Bundle();
 
@@ -185,10 +187,13 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
         return result;
     }
 
+
     @Override
     public Bundle updateCredentials(
             final AccountAuthenticatorResponse response, final Account account,
             final String authTokenType, final Bundle options) {
+        Log.d(TAG,"---------ddd updateCredentials---------");
+        new Throwable().printStackTrace();
         final Intent intent = new Intent(context, LoginActivity.class);
         intent.putExtra(PARAM_AUTHTOKEN_TYPE, authTokenType);
         intent.putExtra(KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);

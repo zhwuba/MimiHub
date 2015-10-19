@@ -8,7 +8,7 @@ public interface AccountConstants {
     /**
      * Account type
      */
-    String ACCOUNT_TYPE = "jp.forkhub";
+    String ACCOUNT_TYPE = "mimi";
 
     /**
      * Account name
@@ -28,6 +28,6 @@ public interface AccountConstants {
     /**
      * Application note
      */
-    String APP_NOTE = "ForkHub";
+    String APP_NOTE = "MimiGitHub";
 
 }
