@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static android.accounts.AccountManager.KEY_ACCOUNT_NAME;
-import static android.util.Log.DEBUG;
 import static com.mimi.github.accounts.AccountConstants.ACCOUNT_TYPE;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 
@@ -59,7 +58,7 @@ public class AccountUtils {
                     if (descriptor != null
                             && ACCOUNT_TYPE.equals(descriptor.type)) {
                         Log.d(TAG,"--------packageName -------- " + descriptor.packageName);
-                        HAS_AUTHENTICATOR = "jp.forkhub"
+                        HAS_AUTHENTICATOR = "zh.Mimi"
                                 .equals(descriptor.packageName);
                         break;
                     }
@@ -171,7 +170,7 @@ public class AccountUtils {
      */
     public static Account getAccount(final AccountManager manager,
                                      final Activity activity) throws IOException, AccountsException {
-        final boolean loggable = Log.isLoggable(TAG, DEBUG);
+        final boolean loggable = true;//Log.isLoggable(TAG, DEBUG);
         if (loggable)
             Log.d(TAG, "Getting account");
 

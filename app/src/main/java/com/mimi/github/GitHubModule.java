@@ -20,6 +20,7 @@ import java.io.File;
 public class GitHubModule extends AbstractModule{
     @Override
     protected void configure() {
+        install(new ServicesModule());
         install(AccountScope.module());
     }
 
