@@ -116,7 +116,7 @@ public class LoginActivity extends RoboActionBarAccountAuthenticatorActivity{
         username = intent.getStringExtra(PARAM_USERNAME);
         authTokenType = intent.getStringExtra(PARAM_AUTHTOKEN_TYPE);
         confirmCredentials = intent.getBooleanExtra(PARAM_CONFIRMCREDENTIALS, false);
-        //requestNewAccount = (username == null);
+        requestNewAccount = (username == null);
 
         if(!TextUtils.isEmpty(username)){
             loginText.setText(username);
@@ -198,7 +198,6 @@ public class LoginActivity extends RoboActionBarAccountAuthenticatorActivity{
             public User call() throws Exception {
                 GitHubClient client = new TwoFactorAuthClient();
                 client.setCredentials(username,password);
-                //client.setOAuth2Token("5495f465e05900884b28518023d5ea44b9178833");
 
                 User user;
                 try{
@@ -207,7 +206,7 @@ public class LoginActivity extends RoboActionBarAccountAuthenticatorActivity{
                         Log.e(TAG," -----getuser null");
                     return null;
                 }
-                Log.d(TAG,"-----login success---user login------" + user.getLogin());
+
                 Account account = new Account(user.getLogin(),ACCOUNT_TYPE);
                 if (requestNewAccount) {
                     accountManager
@@ -226,7 +225,6 @@ public class LoginActivity extends RoboActionBarAccountAuthenticatorActivity{
 
             @Override
             protected void onSuccess(User user) throws Exception {
-                Log.d(TAG,"-----login success---user------" + user.getName());
                 dialog.dismiss();
 
                 if (user != null)
@@ -235,7 +233,6 @@ public class LoginActivity extends RoboActionBarAccountAuthenticatorActivity{
 
             @Override
             protected void onException(Exception e) throws RuntimeException {
-                Log.d(TAG,"-----login onException---------" + e);
                 dialog.dismiss();
 
                 handleLoginException(e);

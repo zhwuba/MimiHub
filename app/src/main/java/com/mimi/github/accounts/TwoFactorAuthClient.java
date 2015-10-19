@@ -63,18 +63,15 @@ public class TwoFactorAuthClient extends DefaultClient {
 
         try {
             String accept = request.getResponseContentType();
-            Log.d(TAG, "----- GitHubResponse ---- acct = " + accept);
             if (accept != null)
                 httpRequest.setRequestProperty(HEADER_ACCEPT, accept);
             final int code = httpRequest.getResponseCode();
-            Log.d(TAG, "----- GitHubResponse ---- code = " + code);
             updateRateLimits(httpRequest);
             if (isOk(code))
                 return new GitHubResponse(httpRequest, getBody(request,
                         getStream(httpRequest)));
             if (isEmpty(code))
                 return new GitHubResponse(httpRequest, null);
-            Log.d(TAG, "----- GitHubResponse ---- code error ");
             throw createException(getStream(httpRequest), code,
                     httpRequest.getResponseMessage());
         } catch (IOException e) {
