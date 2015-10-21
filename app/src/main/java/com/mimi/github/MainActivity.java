@@ -28,15 +28,20 @@ import com.mimi.github.persistence.AccountDataManager;
 import com.mimi.github.ui.TabPagerActivity;
 import com.mimi.github.ui.repo.OrganizationLoader;
 import com.mimi.github.ui.user.HomePagerAdapter;
+import com.mimi.github.ui.user.OrganizationSelectionListener;
+import com.mimi.github.ui.user.OrganizationSelectionProvider;
 
 import org.eclipse.egit.github.core.User;
 
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MainActivity extends TabPagerActivity<HomePagerAdapter>
         implements NavigationView.OnNavigationItemSelectedListener,
-        LoaderManager.LoaderCallbacks<List<User>> {
+        LoaderManager.LoaderCallbacks<List<User>>,
+        OrganizationSelectionProvider {
 
     private final static String TAG = "mimi.MainActivity";
 
@@ -59,6 +64,9 @@ public class MainActivity extends TabPagerActivity<HomePagerAdapter>
     private SharedPreferences sharedPreferences;
 
     private boolean isDefaultUser;
+
+    private Set<OrganizationSelectionListener> orgSelectionListeners =
+            new LinkedHashSet<OrganizationSelectionListener>();
 
     @Override
     protected HomePagerAdapter createAdapter() {
@@ -225,7 +233,22 @@ public class MainActivity extends TabPagerActivity<HomePagerAdapter>
             pager.setItem(item);
         }
 
-        //for (OrganizationSelectionListener listener : orgSelectionListeners)
-            //listener.onOrganizationSelected(org);
+        for (OrganizationSelectionListener listener : orgSelectionListeners)
+            listener.onOrganizationSelected(org);
+    }
+
+    @Override
+    public User addListener(OrganizationSelectionListener listener) {
+        if (listener != null)
+            orgSelectionListeners.add(listener);
+        return org;
+    }
+
+    @Override
+    public OrganizationSelectionProvider removeListener(
+            OrganizationSelectionListener listener) {
+        if (listener != null)
+            orgSelectionListeners.remove(listener);
+        return this;
     }
 }
