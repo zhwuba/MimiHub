@@ -5,8 +5,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 
 import com.github.kevinsawicki.wishlist.SingleTypeAdapter;
+import com.github.kevinsawicki.wishlist.ViewUtils;
 import com.mimi.github.R;
 import com.mimi.github.Util.AvatarLoader;
+import com.mimi.github.Util.TypefaceUtils;
+import com.mimi.github.ui.StyledText;
 
 import org.eclipse.egit.github.core.event.CreatePayload;
 import org.eclipse.egit.github.core.event.Event;
@@ -118,7 +121,68 @@ public class NewsListAdapter extends SingleTypeAdapter<Event> {
 
     @Override
     protected void update(int i, Event event) {
-        Log.d(TAG,"------update list view --------");
+        Log.d(TAG, "------update list view --------");
         avatarLoader.bind(imageView(0), event.getActor());
+
+        String type = event.getType();
+        Log.d(TAG,"-------- update list type = " + type);
+
+        StyledText main = new StyledText();
+        StyledText details = new StyledText();
+        String icon = null;
+
+        switch (type){
+            case Event.TYPE_COMMIT_COMMENT:
+                break;
+            case Event.TYPE_CREATE:
+                break;
+            case Event.TYPE_DELETE:
+                break;
+            case Event.TYPE_DOWNLOAD:
+                break;
+            case Event.TYPE_FOLLOW:
+                break;
+            case Event.TYPE_FORK:
+                break;
+            case Event.TYPE_FORK_APPLY:
+                break;
+            case Event.TYPE_GIST:
+                break;
+            case Event.TYPE_GOLLUM:
+                break;
+            case Event.TYPE_ISSUE_COMMENT:
+                break;
+            case Event.TYPE_MEMBER:
+                break;
+            case Event.TYPE_ISSUES:
+                break;
+            case Event.TYPE_PUBLIC:
+                break;
+            case Event.TYPE_PULL_REQUEST:
+                break;
+            case Event.TYPE_PULL_REQUEST_REVIEW_COMMENT:
+                break;
+            case Event.TYPE_TEAM_ADD:
+                break;
+            case Event.TYPE_WATCH:
+                icon = TypefaceUtils.ICON_WATCH;
+                break;
+        }
+
+        if(icon != null){
+            ViewUtils.setGone(setText(3,icon), false);
+        }else{
+            setGone(3, true);
+        }
+
+        if(main != null){
+            setText(1, main);
+        }
+
+    }
+
+    private void formatWatch(Event event, StyledText main,
+                        StyledText details){
+
     }
 }
