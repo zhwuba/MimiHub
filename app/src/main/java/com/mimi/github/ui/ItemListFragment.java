@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,8 @@ public abstract class ItemListFragment<E> extends DialogFragment
             implements SwipeRefreshLayout.OnRefreshListener, LoaderCallbacks<List<E>>{
     private final static String TAG = "ItemListFragment";
 
+    private static final String FORCE_REFRESH = "forceRefresh";
+
     protected List<E> items = Collections.emptyList();
 
     protected ListView listView;
@@ -43,6 +46,23 @@ public abstract class ItemListFragment<E> extends DialogFragment
     private SwipeRefreshLayout swipeRefreshLayout;
 
     private boolean listShown;
+
+    protected void forceRefresh(){
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(FORCE_REFRESH, true);
+        refresh(bundle);
+    }
+
+    public void refresh() {
+        refresh(null);
+    }
+
+    private void refresh(final Bundle args) {
+        if (!isUsable())
+            return;
+
+        getLoaderManager().restartLoader(0, args, this);
+    }
 
 
     @Override
@@ -104,7 +124,8 @@ public abstract class ItemListFragment<E> extends DialogFragment
 
     @Override
     public void onRefresh() {
-
+        Log.d(TAG, "---------onRefresh-------");
+        forceRefresh();
     }
 
     protected abstract int getErrorMessage(Exception exception);

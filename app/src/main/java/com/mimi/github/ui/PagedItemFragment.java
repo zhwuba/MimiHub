@@ -52,4 +52,9 @@ public abstract class PagedItemFragment<E> extends ItemListFragment<E> {
 
         super.refreshWithProgress();
     }
+
+    protected void forceRefresh(){
+        page.clear();
+        super.forceRefresh();
+    }
 }

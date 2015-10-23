@@ -216,6 +216,7 @@ public class AvatarLoader {
             return null;
 
         String avatarUrl = user.getAvatarUrl();
+        Log.d(TAG,"---------getAvatarUrl-----" + avatarUrl);
         if (TextUtils.isEmpty(avatarUrl)) {
             avatarUrl = getAvatarUrl(GravatarUtils.getHash(user.getEmail()));
         }

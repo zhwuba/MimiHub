@@ -3,17 +3,22 @@ package com.mimi.github.ui.user;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 
 import com.github.kevinsawicki.wishlist.SingleTypeAdapter;
 import com.github.kevinsawicki.wishlist.ViewUtils;
 import com.mimi.github.R;
 import com.mimi.github.Util.AvatarLoader;
+import com.mimi.github.Util.TimeUtils;
 import com.mimi.github.Util.TypefaceUtils;
 import com.mimi.github.ui.StyledText;
 
+import org.eclipse.egit.github.core.Repository;
+import org.eclipse.egit.github.core.User;
 import org.eclipse.egit.github.core.event.CreatePayload;
 import org.eclipse.egit.github.core.event.Event;
 import org.eclipse.egit.github.core.event.EventPayload;
+import org.eclipse.egit.github.core.event.EventRepository;
 import org.eclipse.egit.github.core.event.GistPayload;
 import org.eclipse.egit.github.core.event.IssueCommentPayload;
 import org.eclipse.egit.github.core.event.IssuesPayload;
@@ -88,7 +93,7 @@ public class NewsListAdapter extends SingleTypeAdapter<Event> {
         super(inflater, R.layout.news_item);
 
         this.avatarLoader = avatarLoader;
-        this.showRepoName = false;
+        this.showRepoName = true;
         setItems(events);
 
     }
@@ -120,6 +125,14 @@ public class NewsListAdapter extends SingleTypeAdapter<Event> {
     }
 
     @Override
+    protected View initialize(View view) {
+        view = super.initialize(view);
+
+        TypefaceUtils.setOcticons(textView(view, 3));
+        return view;
+    }
+
+    @Override
     protected void update(int i, Event event) {
         Log.d(TAG, "------update list view --------");
         avatarLoader.bind(imageView(0), event.getActor());
@@ -143,6 +156,8 @@ public class NewsListAdapter extends SingleTypeAdapter<Event> {
             case Event.TYPE_FOLLOW:
                 break;
             case Event.TYPE_FORK:
+                icon = TypefaceUtils.ICON_REPO_FORKED;
+                formatForkRepo(event,main,details);
                 break;
             case Event.TYPE_FORK_APPLY:
                 break;
@@ -165,7 +180,8 @@ public class NewsListAdapter extends SingleTypeAdapter<Event> {
             case Event.TYPE_TEAM_ADD:
                 break;
             case Event.TYPE_WATCH:
-                icon = TypefaceUtils.ICON_WATCH;
+                icon = TypefaceUtils.ICON_STAR;
+                formatWatch(event,main,details);
                 break;
         }
 
@@ -179,10 +195,51 @@ public class NewsListAdapter extends SingleTypeAdapter<Event> {
             setText(1, main);
         }
 
+        if(!TextUtils.isEmpty(details)){
+            ViewUtils.setGone(setText(2,details), false);
+        }else {
+            setGone(2,true);
+        }
+
+        setText(4, TimeUtils.getRelativeTime(event.getCreatedAt()));
+    }
+
+    private StyledText boldActor(StyledText styledText, final Event event){
+        return boldUser(styledText, event.getActor());
+    }
+
+    private StyledText boldUser(StyledText styledText, final User user){
+        if(styledText != null){
+            styledText.bold(user.getLogin());
+        }
+        return styledText;
+    }
+
+    private StyledText boldRepo(StyledText styledText, final Event event){
+        if(styledText != null){
+            EventRepository repository = event.getRepo();
+            styledText.bold(repository.getName());
+        }
+        return styledText;
+    }
+
+    private void formatForkRepo(Event event, StyledText main, StyledText details){
+        boldActor(main,event);
+        main.append(" forked repository ");
+
+        if(showRepoName){
+            boldRepo(main,event);
+        }
     }
 
     private void formatWatch(Event event, StyledText main,
                         StyledText details){
+        boldActor(main, event);
+        main.append(" starred ");
+
+        if(showRepoName){
+            boldRepo(main,event);
+        }
 
     }
 }

@@ -24,7 +24,7 @@ public abstract class NewsFragment extends PagedItemFragment<Event>{
     @Inject
     protected EventService service;
 
-    private boolean showRepoName;
+    private boolean showRepoName = true;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -42,6 +42,10 @@ public abstract class NewsFragment extends PagedItemFragment<Event>{
     @Override
     protected int getErrorMessage(Exception exception) {
         return R.string.error_news_load;
+    }
+
+    protected void setShowRepoName(boolean showRepoName){
+        this.showRepoName = showRepoName;
     }
 
 
