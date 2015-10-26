@@ -1,7 +1,8 @@
 package com.mimi.github.ui.repo;
 
-import android.accounts.Account;
 import android.view.LayoutInflater;
+
+import com.mimi.github.R;
 
 import org.eclipse.egit.github.core.Repository;
 import org.eclipse.egit.github.core.User;
@@ -18,7 +19,7 @@ public class DefaultRepositoryListAdapter extends RepositoryListAdapter<Reposito
 
    public DefaultRepositoryListAdapter(LayoutInflater inflater,
         Repository[] repositories, AtomicReference<User> account){
-       super(0,inflater, repositories);
+       super(R.layout.repo_items,inflater, repositories);
 
        this.account = account;
    }

@@ -127,4 +127,8 @@
         <item name="android:singleLine">true</item>
     </style>
 
+    <style name="PrimaryIcon" parent="TextIcon">
+        <item name="android:textSize">28dp</item>
+    </style>
+
 </resources>
